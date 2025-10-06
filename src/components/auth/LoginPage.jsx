@@ -1,9 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../../services/context/AuthContext";
-
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -16,33 +14,22 @@ export default function LoginPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/token/", // Django JWT endpoint
-        {
-          username: form.username,
-          password: form.password,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
 
-      // Save tokens
-      localStorage.setItem("access", response.data.access);
-      localStorage.setItem("refresh", response.data.refresh);
+    // 👉 Fake login: allow any username/password
+    if (form.username && form.password) {
+      // Save fake token just for demo
+      localStorage.setItem("access", "dummy-access-token");
+      localStorage.setItem("refresh", "dummy-refresh-token");
 
-      // Update context
       setUser(form.username);
       setLoggedIn(true);
 
       setError("");
       navigate("/dashboard"); // redirect after login
-    } catch (err) {
-      console.error("Login failed:", err.response?.data || err.message);
-      setError("Invalid username or password");
+    } else {
+      setError("Please enter username and password");
     }
   };
 
